@@ -6,6 +6,7 @@ use serde::{Deserialize, Serialize};
 mod cartridge_size;
 mod destination_language;
 mod header_misc;
+mod nds_region;
 mod unique_code_category;
 mod unit_code;
 
@@ -18,6 +19,8 @@ pub struct NDSRom {
     pub maker_code: String,
     pub unit_code: unit_code::UnitCode,
     pub cartridge_size: cartridge_size::CartridgeSize,
+    pub rom_version: u8,
+    pub rom_size: u32,
     pub header_misc: header_misc::HeaderMisc,
 }
 
@@ -43,6 +46,8 @@ impl TryFrom<RawNDSRom> for NDSRom {
             maker_code: decode_string(&raw.header.maker_code),
             unit_code: unit_code::UnitCode::from(raw.header.unit_code),
             cartridge_size: cartridge_size::CartridgeSize::from(raw.header.device_capacity),
+            rom_version: raw.header.rom_version,
+            rom_size: raw.header.total_used_rom_size,
             header_misc: header_misc::HeaderMisc::try_from(&raw.header)?,
         };
 

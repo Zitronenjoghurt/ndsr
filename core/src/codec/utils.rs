@@ -1,3 +1,5 @@
+pub mod serde_bytes;
+
 pub fn trim_zeros(bytes: &[u8]) -> Vec<u8> {
     bytes.iter().take_while(|&b| *b != 0).copied().collect()
 }

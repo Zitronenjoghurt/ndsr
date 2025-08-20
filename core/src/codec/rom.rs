@@ -22,11 +22,16 @@ pub struct NDSRom {
     pub rom_version: u8,
     pub rom_size: u32,
     pub header_misc: header_misc::HeaderMisc,
+    pub data: Vec<u8>,
 }
 
 impl NDSRom {
     pub fn from_bytes(bytes: &[u8]) -> NDSRResult<Self> {
         Self::try_from(RawNDSRom::from_bytes(bytes)?)
+    }
+
+    pub fn to_bytes(&self) -> NDSRResult<Vec<u8>> {
+        RawNDSRom::try_from(self).map(|raw| raw.to_bytes())?
     }
 }
 
@@ -49,6 +54,7 @@ impl TryFrom<RawNDSRom> for NDSRom {
             rom_version: raw.header.rom_version,
             rom_size: raw.header.total_used_rom_size,
             header_misc: header_misc::HeaderMisc::try_from(&raw.header)?,
+            data: raw.data,
         };
 
         Ok(rom)

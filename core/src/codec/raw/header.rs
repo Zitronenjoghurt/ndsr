@@ -51,10 +51,10 @@ pub struct RawNDSHeader {
     pub _reserved3: [u8; 148],
 }
 
-impl TryFrom<NDSRom> for RawNDSHeader {
+impl TryFrom<&NDSRom> for RawNDSHeader {
     type Error = NDSRError;
 
-    fn try_from(rom: NDSRom) -> NDSRResult<Self> {
+    fn try_from(rom: &NDSRom) -> NDSRResult<Self> {
         let game_title_bytes = rom.game_title.bytes().collect::<Vec<_>>();
         let game_title = [
             game_title_bytes.get(0).copied().unwrap_or(0),

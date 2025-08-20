@@ -1,4 +1,4 @@
-use crate::codec::raw::header::RawNDSHeader;
+use crate::codec::raw::header::RawHeader;
 use crate::codec::rom::nds_region::NDSRegion;
 use crate::codec::utils::serde_bytes;
 use crate::error::{NDSRError, NDSRResult};
@@ -7,6 +7,7 @@ use serde::{Deserialize, Serialize};
 #[derive(Debug, Serialize, Deserialize)]
 pub struct HeaderMisc {
     pub encryption_seed_select: u8,
+    #[serde(skip_serializing)]
     pub _reserved1: [u8; 7],
     pub dsi_flags: u8,
     pub nds_region: NDSRegion,
@@ -34,24 +35,29 @@ pub struct HeaderMisc {
     pub secure_area_delay: u16,
     pub arm9_autoload_list_hook_ram_address: u32,
     pub arm7_autoload_list_hook_ram_address: u32,
+    #[serde(skip_serializing)]
     pub secure_area_disable: [u8; 8],
     pub header_size: u32,
+    #[serde(skip_serializing)]
     #[serde(with = "serde_bytes")]
     pub _reserved2: [u8; 56],
+    #[serde(skip_serializing)]
     #[serde(with = "serde_bytes")]
     pub nintendo_logo: [u8; 156],
     pub nintendo_logo_checksum: u16,
+    pub header_checksum: u16,
     pub debug_rom_offset: u32,
     pub debug_rom_size: u32,
     pub debug_ram_address: u32,
+    #[serde(skip_serializing)]
     #[serde(with = "serde_bytes")]
     pub _reserved3: [u8; 148],
 }
 
-impl TryFrom<&RawNDSHeader> for HeaderMisc {
+impl TryFrom<&RawHeader> for HeaderMisc {
     type Error = NDSRError;
 
-    fn try_from(header: &RawNDSHeader) -> NDSRResult<Self> {
+    fn try_from(header: &RawHeader) -> NDSRResult<Self> {
         let misc = Self {
             encryption_seed_select: header.encryption_seed_select,
             _reserved1: header._reserved1,
@@ -86,6 +92,7 @@ impl TryFrom<&RawNDSHeader> for HeaderMisc {
             _reserved2: header._reserved2,
             nintendo_logo: header.nintendo_logo,
             nintendo_logo_checksum: header.nintendo_logo_checksum,
+            header_checksum: header.header_checksum,
             debug_rom_offset: header.debug_rom_offset,
             debug_rom_size: header.debug_rom_size,
             debug_ram_address: header.debug_ram_address,

@@ -1,0 +1,14 @@
+use binrw::{BinRead, BinWrite};
+use modular_bitfield::bitfield;
+use modular_bitfield::prelude::*;
+
+#[bitfield]
+#[derive(Debug, Clone, Copy, BinRead, BinWrite)]
+#[br(map = |x: u16| Self::from_bytes(x.to_le_bytes()))]
+#[bw(map = |x: &Self| u16::from_le_bytes(x.into_bytes()))]
+pub struct BGR555 {
+    pub unused: B1,
+    pub blue: B5,
+    pub green: B5,
+    pub red: B5,
+}

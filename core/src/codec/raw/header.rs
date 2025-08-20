@@ -2,9 +2,11 @@ use crate::codec::rom::NDSRom;
 use crate::error::{NDSRError, NDSRResult};
 use binrw::{BinRead, BinWrite};
 
+pub const HEADER_SIZE: usize = 0x200;
+
 /// Spec: https://mgba-emu.github.io/gbatek/#dscartridgeheader
 #[derive(Debug, BinRead, BinWrite)]
-pub struct RawNDSHeader {
+pub struct RawHeader {
     pub game_title: [u8; 12],
     pub game_code: [u8; 4],
     pub maker_code: [u8; 2],
@@ -45,17 +47,18 @@ pub struct RawNDSHeader {
     pub _reserved2: [u8; 56],
     pub nintendo_logo: [u8; 156],
     pub nintendo_logo_checksum: u16,
+    pub header_checksum: u16,
     pub debug_rom_offset: u32,
     pub debug_rom_size: u32,
     pub debug_ram_address: u32,
     pub _reserved3: [u8; 148],
 }
 
-impl TryFrom<&NDSRom> for RawNDSHeader {
+impl TryFrom<&NDSRom> for RawHeader {
     type Error = NDSRError;
 
     fn try_from(rom: &NDSRom) -> NDSRResult<Self> {
-        let game_title_bytes = rom.game_title.bytes().collect::<Vec<_>>();
+        let game_title_bytes = rom.short_title.bytes().collect::<Vec<_>>();
         let game_title = [
             game_title_bytes.get(0).copied().unwrap_or(0),
             game_title_bytes.get(1).copied().unwrap_or(0),
@@ -72,7 +75,7 @@ impl TryFrom<&NDSRom> for RawNDSHeader {
         ];
 
         let unique_code = rom.unique_code_category.into();
-        let short_title_bytes = rom.short_title.bytes().collect::<Vec<_>>();
+        let short_title_bytes = rom.title_code.bytes().collect::<Vec<_>>();
         let destination_language = rom.destination_language.into();
         let game_code = [
             unique_code,
@@ -134,6 +137,7 @@ impl TryFrom<&NDSRom> for RawNDSHeader {
             _reserved2: rom.header_misc._reserved2,
             nintendo_logo: rom.header_misc.nintendo_logo,
             nintendo_logo_checksum: rom.header_misc.nintendo_logo_checksum,
+            header_checksum: rom.header_misc.header_checksum,
             debug_rom_offset: rom.header_misc.debug_rom_offset,
             debug_rom_size: rom.header_misc.debug_rom_size,
             debug_ram_address: rom.header_misc.debug_ram_address,

@@ -6,5 +6,5 @@ edition = "2024"
 [dependencies]
 binrw = { workspace = true }
 modular-bitfield = { workspace = true }
-serde = { workspace = true }
+png = { workspace = true }
 thiserror = { workspace = true }

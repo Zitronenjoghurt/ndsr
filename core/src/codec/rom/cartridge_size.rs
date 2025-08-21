@@ -1,8 +1,6 @@
-use serde::{Deserialize, Serialize};
-
 /// Manufactured cartridge sizes only ranged from 8MB to 512MB
 /// Source: https://en.wikipedia.org/wiki/Nintendo_Game_Card
-#[derive(Debug, Copy, Clone, Serialize, Deserialize)]
+#[derive(Debug, Copy, Clone)]
 pub enum CartridgeSize {
     Unknown(u8),
     KB128,

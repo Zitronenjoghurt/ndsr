@@ -6,7 +6,6 @@ use binrw::{BinRead, BinWrite};
 use header::RawHeader;
 use std::io::Cursor;
 
-pub mod bgr555;
 pub mod header;
 pub mod icon_bitmap;
 pub mod icon_palette;
@@ -28,7 +27,7 @@ impl RawNDSRom {
         &self.data[data_address..data_address + size]
     }
 
-    pub fn get_icon_title(&self) -> NDSRResult<RawIconTitle> {
+    pub fn extract_icon_title(&self) -> NDSRResult<RawIconTitle> {
         Ok(RawIconTitle::read(&mut Cursor::new(self.get_data_slice(
             self.header.icon_title_offset as usize,
             ICON_TITLE_SIZE,

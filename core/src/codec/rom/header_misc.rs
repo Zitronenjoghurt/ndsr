@@ -1,13 +1,10 @@
 use crate::codec::raw::header::RawHeader;
 use crate::codec::rom::nds_region::NDSRegion;
-use crate::codec::utils::serde_bytes;
 use crate::error::{NDSRError, NDSRResult};
-use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug)]
 pub struct HeaderMisc {
     pub encryption_seed_select: u8,
-    #[serde(skip_serializing)]
     pub _reserved1: [u8; 7],
     pub dsi_flags: u8,
     pub nds_region: NDSRegion,
@@ -35,22 +32,15 @@ pub struct HeaderMisc {
     pub secure_area_delay: u16,
     pub arm9_autoload_list_hook_ram_address: u32,
     pub arm7_autoload_list_hook_ram_address: u32,
-    #[serde(skip_serializing)]
     pub secure_area_disable: [u8; 8],
     pub header_size: u32,
-    #[serde(skip_serializing)]
-    #[serde(with = "serde_bytes")]
     pub _reserved2: [u8; 56],
-    #[serde(skip_serializing)]
-    #[serde(with = "serde_bytes")]
     pub nintendo_logo: [u8; 156],
     pub nintendo_logo_checksum: u16,
     pub header_checksum: u16,
     pub debug_rom_offset: u32,
     pub debug_rom_size: u32,
     pub debug_ram_address: u32,
-    #[serde(skip_serializing)]
-    #[serde(with = "serde_bytes")]
     pub _reserved3: [u8; 148],
 }
 

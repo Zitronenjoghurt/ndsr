@@ -1,7 +1,5 @@
-use serde::{Deserialize, Serialize};
-
 #[allow(clippy::upper_case_acronyms)]
-#[derive(Debug, Copy, Clone, Serialize, Deserialize)]
+#[derive(Debug, Copy, Clone)]
 pub enum UnitCode {
     Unknown(u8),
     NDS,

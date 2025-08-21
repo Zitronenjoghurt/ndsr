@@ -1,6 +1,7 @@
 use crate::codec::raw::icon_bitmap::RawIconBitmap;
 use crate::codec::raw::icon_palette::RawIconPalette;
 use binrw::{BinRead, BinWrite};
+use png::{BitDepth, ColorType};
 
 pub const ICON_TITLE_SIZE: usize = 0x1240;
 

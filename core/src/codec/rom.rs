@@ -1,5 +1,6 @@
+use crate::codec::data::filesystem::Filesystem;
+use crate::codec::data::ROMData;
 use crate::codec::raw::RawNDSRom;
-use crate::codec::rom::icon::RomIcon;
 use crate::codec::utils::{decode_string, trim_zeros_u8};
 use crate::error::{NDSRError, NDSRResult};
 
@@ -25,8 +26,8 @@ pub struct NDSRom {
     pub rom_version: u8,
     pub rom_size: u32,
     pub header_misc: header_misc::HeaderMisc,
-    pub icon: RomIcon,
-    pub data: Vec<u8>,
+    pub icon: icon::RomIcon,
+    pub data: ROMData,
 }
 
 impl NDSRom {
@@ -34,8 +35,17 @@ impl NDSRom {
         Self::try_from(RawNDSRom::from_bytes(bytes)?)
     }
 
-    pub fn to_bytes(&self) -> NDSRResult<Vec<u8>> {
+    pub fn into_bytes(self) -> NDSRResult<Vec<u8>> {
         RawNDSRom::try_from(self).map(|raw| raw.to_bytes())?
+    }
+
+    pub fn get_filesystem(&self) -> NDSRResult<Filesystem> {
+        self.data.extract_filesystem(
+            self.header_misc.fat_offset,
+            self.header_misc.fat_size,
+            self.header_misc.fnt_offset,
+            self.header_misc.fnt_size,
+        )
     }
 }
 
@@ -43,12 +53,8 @@ impl TryFrom<RawNDSRom> for NDSRom {
     type Error = NDSRError;
 
     fn try_from(raw: RawNDSRom) -> NDSRResult<Self> {
-        let raw_icon_title = raw.extract_icon_title()?;
+        let raw_icon_title = raw.data.extract_icon_title(raw.header.icon_title_offset)?;
         let titles = titles::Titles::try_from(&raw_icon_title)?;
-        let icon = RomIcon {
-            bitmap: raw_icon_title.icon_bitmap,
-            palette: raw_icon_title.icon_palette,
-        };
 
         let rom = Self {
             titles,
@@ -66,7 +72,7 @@ impl TryFrom<RawNDSRom> for NDSRom {
             rom_version: raw.header.rom_version,
             rom_size: raw.header.total_used_rom_size,
             header_misc: header_misc::HeaderMisc::try_from(&raw.header)?,
-            icon,
+            icon: icon::RomIcon::from(raw_icon_title),
             data: raw.data,
         };
 

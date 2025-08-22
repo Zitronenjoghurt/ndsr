@@ -1,5 +1,5 @@
-use crate::codec::raw::icon_bitmap::RawIconBitmap;
-use crate::codec::raw::icon_palette::RawIconPalette;
+use crate::codec::data::icon_bitmap::RawIconBitmap;
+use crate::codec::data::icon_palette::RawIconPalette;
 use binrw::{BinRead, BinWrite};
 use png::{BitDepth, ColorType};
 

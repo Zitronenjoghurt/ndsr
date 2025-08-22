@@ -1,4 +1,4 @@
-use crate::codec::raw::icon_title::RawIconTitle;
+use crate::codec::data::icon_title::RawIconTitle;
 use crate::codec::utils::trim_zeros_u16;
 use crate::error::{NDSRError, NDSRResult};
 

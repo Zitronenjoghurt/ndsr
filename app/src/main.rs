@@ -6,6 +6,11 @@ fn main() {
     let bytes = std::fs::read(path).unwrap();
     let rom = NDSRom::from_bytes(&bytes).unwrap();
 
+    let fs = rom.get_filesystem().unwrap();
+    fs.print_tree();
+}
+
+fn render_rom_icon(rom: &NDSRom) {
     let icon_path = PathBuf::from("./hgss.png");
     let mut buffer = Vec::new();
     rom.icon.render_icon_png_512x(&mut buffer);

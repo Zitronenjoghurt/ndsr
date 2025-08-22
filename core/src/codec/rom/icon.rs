@@ -1,5 +1,6 @@
-use crate::codec::raw::icon_bitmap::RawIconBitmap;
-use crate::codec::raw::icon_palette::RawIconPalette;
+use crate::codec::data::icon_bitmap::RawIconBitmap;
+use crate::codec::data::icon_palette::RawIconPalette;
+use crate::codec::data::icon_title::RawIconTitle;
 use png::{BitDepth, ColorType, Compression};
 
 #[derive(Debug, Default, Clone)]
@@ -86,5 +87,14 @@ impl RomIcon {
         }
 
         output
+    }
+}
+
+impl From<RawIconTitle> for RomIcon {
+    fn from(value: RawIconTitle) -> Self {
+        Self {
+            bitmap: value.icon_bitmap,
+            palette: value.icon_palette,
+        }
     }
 }

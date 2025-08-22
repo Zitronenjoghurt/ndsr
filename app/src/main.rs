@@ -1,13 +1,34 @@
+use crate::app::NDSRApp;
 use ndsr_core::codec::rom::NDSRom;
 use std::path::PathBuf;
 
+mod app;
+mod components;
+mod state;
+mod views;
+mod windows;
+
 fn main() {
+    let native_options = eframe::NativeOptions {
+        viewport: egui::ViewportBuilder::default()
+            .with_maximized(true)
+            .with_title("NDSR"),
+        persist_window: true,
+        ..Default::default()
+    };
+
+    eframe::run_native(
+        "NDSR",
+        native_options,
+        Box::new(|cc| Ok(Box::new(NDSRApp::new(cc)))),
+    )
+    .expect("Failed to run egui application.");
+}
+
+fn load_rom() -> NDSRom {
     let path = PathBuf::from("./roms/hgss.nds");
     let bytes = std::fs::read(path).unwrap();
-    let rom = NDSRom::from_bytes(&bytes).unwrap();
-
-    let fs = rom.get_filesystem().unwrap();
-    fs.print_tree();
+    NDSRom::from_bytes(&bytes).unwrap()
 }
 
 fn render_rom_icon(rom: &NDSRom) {

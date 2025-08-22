@@ -7,4 +7,5 @@ ndsr-core = { path = "core" }
 binrw = "0.15.0"
 modular-bitfield = "0.12.0"
 png = "0.17.16"
+serde = { version = "1.0.219", features = ["derive"] }
 thiserror = "2.0.16"

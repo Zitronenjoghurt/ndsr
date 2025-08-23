@@ -2,7 +2,7 @@ use crate::state::AppState;
 use crate::views::{View, ViewManager};
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Default, Serialize, Deserialize)]
+#[derive(Default, Serialize, Deserialize)]
 pub struct NDSRApp {
     state: AppState,
     view_manager: ViewManager,

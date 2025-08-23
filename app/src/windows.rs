@@ -64,3 +64,16 @@ where
         self.set_open(open)
     }
 }
+
+pub trait RenderableWindow {
+    fn window_render(&mut self, ctx: &Context, state: &mut AppState);
+}
+
+impl<T> RenderableWindow for T
+where
+    T: ViewWindow,
+{
+    fn window_render(&mut self, ctx: &Context, state: &mut AppState) {
+        self.render(ctx, state);
+    }
+}

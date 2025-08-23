@@ -1847,6 +1847,7 @@ dependencies = [
  "egui-notify",
  "ndsr-core",
  "serde",
+ "webbrowser",
 ]
 
 [[package]]

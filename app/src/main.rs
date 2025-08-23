@@ -5,6 +5,7 @@ use std::path::PathBuf;
 mod app;
 mod components;
 mod state;
+mod systems;
 mod views;
 mod windows;
 

@@ -956,6 +956,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "egui_ltreeview"
+version = "0.5.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "49b0d47a25b8c98bf01f4281f7d516c6e6631817c2b367319d5b239fd3db1ec7"
+dependencies = [
+ "egui",
+ "serde",
+]
+
+[[package]]
 name = "either"
 version = "1.15.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1845,6 +1855,8 @@ dependencies = [
  "egui",
  "egui-file-dialog",
  "egui-notify",
+ "egui_ltreeview",
+ "image",
  "ndsr-core",
  "serde",
  "webbrowser",

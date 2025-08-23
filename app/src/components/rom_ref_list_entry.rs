@@ -33,38 +33,41 @@ impl<'a> RomRefListEntry<'a> {
 
 impl Component for RomRefListEntry<'_> {
     fn ui(self, ui: &mut Ui) {
-        let desired_size = ui.available_size();
-        let (rect, response) = ui.allocate_exact_size(desired_size, egui::Sense::click());
-        let scope = UiBuilder::new().max_rect(rect);
+        let response = ui
+            .scope_builder(UiBuilder::new().sense(egui::Sense::click()), |ui| {
+                let fill = if self.selected {
+                    ui.style().visuals.selection.bg_fill
+                } else if ui.response().hovered() {
+                    ui.style().visuals.widgets.hovered.bg_fill
+                } else {
+                    ui.style().visuals.widgets.noninteractive.bg_fill
+                };
 
-        let fill = if self.selected {
-            ui.style().visuals.selection.bg_fill
-        } else if response.hovered() {
-            ui.style().visuals.widgets.hovered.bg_fill
-        } else {
-            ui.style().visuals.widgets.noninteractive.bg_fill
-        };
+                Frame::default()
+                    .inner_margin(4.0)
+                    .corner_radius(4.0)
+                    .fill(fill)
+                    .stroke(ui.style().visuals.widgets.noninteractive.bg_stroke)
+                    .show(ui, |ui| {
+                        ui.horizontal(|ui| {
+                            if let Some(texture) = &self.rom_ref.get_icon_texture(ui.ctx()) {
+                                ui.image(texture);
+                            }
+                            ui.style_mut().interaction.selectable_labels = false;
+                            ui.vertical_centered_justified(|ui| {
+                                ui.label(&self.rom_ref.titles().english.title);
+                                if let Some(subtitle) = &self.rom_ref.titles().english.sub_title {
+                                    ui.small(subtitle);
+                                }
+                            });
+                        });
+                    });
+            })
+            .response;
 
         if response.hovered() {
             ui.ctx().set_cursor_icon(CursorIcon::PointingHand);
         }
-
-        ui.scope_builder(scope, |ui| {
-            Frame::default()
-                .inner_margin(4.0)
-                .corner_radius(4.0)
-                .fill(fill)
-                .stroke(ui.style().visuals.widgets.noninteractive.bg_stroke)
-                .show(ui, |ui| {
-                    ui.style_mut().interaction.selectable_labels = false;
-                    ui.vertical_centered_justified(|ui| {
-                        ui.label(&self.rom_ref.titles().english.title);
-                        if let Some(subtitle) = &self.rom_ref.titles().english.sub_title {
-                            ui.small(subtitle);
-                        }
-                    });
-                });
-        });
 
         if response.clicked()
             && let Some(context) = self.rom_library_context

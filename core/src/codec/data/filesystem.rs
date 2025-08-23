@@ -8,12 +8,14 @@ pub mod fnt;
 
 #[derive(Debug, Default)]
 pub struct Filesystem {
-    pub entries: HashMap<u16, FilesystemEntry>,
+    entries: HashMap<u16, FilesystemEntry>,
     // 0xF000 will be the root
     children: HashMap<u16, BTreeSet<u16>>,
 }
 
 impl Filesystem {
+    pub const ROOT: u16 = 0xF000;
+
     pub fn build(fat: &FAT, fnt: &FNT) -> NDSRResult<Self> {
         let mut fs = Self::default();
 
@@ -65,8 +67,16 @@ impl Filesystem {
         }
     }
 
+    pub fn get_entry(&self, id: u16) -> Option<&FilesystemEntry> {
+        self.entries.get(&id)
+    }
+
+    pub fn get_children(&self, parent: u16) -> Option<&BTreeSet<u16>> {
+        self.children.get(&parent)
+    }
+
     pub fn print_tree(&self) {
-        self.rec_print_tree(0xF000, 0);
+        self.rec_print_tree(Self::ROOT, 0);
     }
 
     fn rec_print_tree(&self, id: u16, depth: usize) {
@@ -74,7 +84,7 @@ impl Filesystem {
 
         if let Some(entry) = self.entries.get(&id) {
             println!("{}/{}", indent, entry.get_name());
-        } else if id == 0xF000 {
+        } else if id == Self::ROOT {
             println!("/");
         }
 

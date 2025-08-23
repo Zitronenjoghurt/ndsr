@@ -27,8 +27,10 @@ impl RomLibrary {
                 RomLibraryAction::Select(index) => {
                     if Some(index) == self.selected_rom_index {
                         self.selected_rom_index = None;
+                        rom_store.reset_loaded_rom();
                     } else {
                         self.selected_rom_index = Some(index);
+                        rom_store.load_rom(index);
                     }
                 }
             }

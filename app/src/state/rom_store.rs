@@ -2,13 +2,18 @@ use ndsr_core::codec::rom::icon::RomIcon;
 use ndsr_core::codec::rom::titles::Titles;
 use ndsr_core::codec::rom::NDSRom;
 use serde::{Deserialize, Serialize};
+use std::cell::RefCell;
 use std::path::{Path, PathBuf};
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Serialize, Deserialize)]
 pub struct RomStore {
     roms: Vec<RomRef>,
     #[serde(skip, default = "default_true")]
     dirty: bool,
+    #[serde(skip, default)]
+    loaded_rom: Option<NDSRom>,
+    #[serde(skip, default)]
+    loaded_rom_index: Option<usize>,
 }
 
 impl Default for RomStore {
@@ -16,6 +21,8 @@ impl Default for RomStore {
         Self {
             roms: Vec::new(),
             dirty: true,
+            loaded_rom: None,
+            loaded_rom_index: None,
         }
     }
 }
@@ -29,7 +36,7 @@ impl RomStore {
         self.dirty = false;
     }
 
-    pub fn load_rom(&mut self, path: &Path) {
+    pub fn add_rom(&mut self, path: &Path) {
         let mut rom_ref = RomRef::new(PathBuf::from(path));
         let load_success = rom_ref.load();
         if !load_success {
@@ -50,10 +57,32 @@ impl RomStore {
         self.sort();
     }
 
-    pub fn load_roms(&mut self, paths: &[PathBuf]) {
+    pub fn add_roms(&mut self, paths: &[PathBuf]) {
         for path in paths {
-            self.load_rom(path);
+            self.add_rom(path);
         }
+    }
+
+    pub fn load_rom(&mut self, index: usize) {
+        if self.loaded_rom_index == Some(index) {
+            return;
+        }
+
+        let Some(rom_ref) = self.roms.get(index) else {
+            return;
+        };
+
+        self.loaded_rom = rom_ref.load_rom();
+        self.loaded_rom_index = Some(index);
+    }
+
+    pub fn reset_loaded_rom(&mut self) {
+        self.loaded_rom = None;
+        self.loaded_rom_index = None;
+    }
+
+    pub fn loaded_rom(&self) -> Option<&NDSRom> {
+        self.loaded_rom.as_ref()
     }
 
     pub fn refresh(&mut self) {
@@ -68,18 +97,24 @@ impl RomStore {
         &self.roms
     }
 
+    pub fn roms_mut(&mut self) -> &mut [RomRef] {
+        &mut self.roms
+    }
+
     fn sort(&mut self) {
         self.roms
             .sort_by(|a, b| a.titles.english.title.cmp(&b.titles.english.title));
     }
 }
 
-#[derive(Debug, Default, Serialize, Deserialize)]
+#[derive(Default, Serialize, Deserialize)]
 pub struct RomRef {
     path: PathBuf,
     identifier: String,
-    icon: RomIcon,
     titles: Titles,
+    icon: RomIcon,
+    #[serde(skip)]
+    icon_texture: RefCell<Option<egui::TextureHandle>>,
 }
 
 impl RomRef {
@@ -91,11 +126,7 @@ impl RomRef {
     }
 
     pub fn load(&mut self) -> bool {
-        let Ok(data) = std::fs::read(&self.path) else {
-            return false;
-        };
-
-        let Ok(rom) = NDSRom::from_bytes(&data) else {
+        let Some(rom) = self.load_rom() else {
             return false;
         };
 
@@ -105,8 +136,8 @@ impl RomRef {
         }
 
         self.identifier = identifier;
-        self.icon = rom.icon;
         self.titles = rom.titles;
+        self.icon = rom.icon;
 
         true
     }
@@ -117,6 +148,37 @@ impl RomRef {
 
     pub fn titles(&self) -> &Titles {
         &self.titles
+    }
+
+    pub fn get_icon_texture(&self, ctx: &egui::Context) -> Option<egui::TextureHandle> {
+        if self.icon_texture.borrow().is_some() {
+            return self.icon_texture.borrow().clone();
+        }
+
+        let mut png_bytes = Vec::new();
+        self.icon.render_icon_png_32x(&mut png_bytes);
+
+        let Ok(image) = image::load_from_memory(&png_bytes) else {
+            return None;
+        };
+
+        let rgba = image.to_rgba8();
+        let color_image = egui::ColorImage::from_rgba_unmultiplied([32, 32], rgba.as_raw());
+        let texture = ctx.load_texture(
+            format!("rom_icon_{}", self.identifier),
+            color_image,
+            Default::default(),
+        );
+
+        *self.icon_texture.borrow_mut() = Some(texture.clone());
+        Some(texture)
+    }
+
+    pub fn load_rom(&self) -> Option<NDSRom> {
+        let Ok(data) = std::fs::read(&self.path) else {
+            return None;
+        };
+        NDSRom::from_bytes(&data).ok()
     }
 }
 

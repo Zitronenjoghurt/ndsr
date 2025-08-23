@@ -35,15 +35,19 @@ impl FilePicker {
     pub fn update(&mut self, ctx: &Context, state: &mut AppState) {
         self.file_dialog.update(ctx);
 
+        let paths = if let Some(path) = self.file_dialog.take_picked() {
+            vec![path]
+        } else if let Some(paths) = self.file_dialog.take_picked_multiple() {
+            paths
+        } else {
+            return;
+        };
+
         let Some(callback) = self.callback.take() else {
             return;
         };
 
-        if let Some(path) = self.file_dialog.take_picked() {
-            callback(state, vec![path]);
-        } else if let Some(paths) = self.file_dialog.take_picked_multiple() {
-            callback(state, paths);
-        }
+        callback(state, paths);
     }
 }
 

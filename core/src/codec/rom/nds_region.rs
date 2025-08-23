@@ -1,4 +1,4 @@
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, Hash)]
 pub enum NDSRegion {
     Unknown(u8),
     Normal,

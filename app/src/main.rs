@@ -27,13 +27,13 @@ fn main() {
 }
 
 fn load_rom() -> NDSRom {
-    let path = PathBuf::from("./roms/hgss.nds");
+    let path = PathBuf::from("./roms/hg.nds");
     let bytes = std::fs::read(path).unwrap();
     NDSRom::from_bytes(&bytes).unwrap()
 }
 
 fn render_rom_icon(rom: &NDSRom) {
-    let icon_path = PathBuf::from("./hgss.png");
+    let icon_path = PathBuf::from("./hg.png");
     let mut buffer = Vec::new();
     rom.icon.render_icon_png_512x(&mut buffer);
     std::fs::write(icon_path, buffer).unwrap();

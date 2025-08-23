@@ -1,3 +1,5 @@
+use std::fmt::{Display, Formatter};
+
 #[derive(Debug, Copy, Clone)]
 pub enum UniqueCodeCategory {
     Unknown(u8),
@@ -46,5 +48,12 @@ impl From<UniqueCodeCategory> for u8 {
             UniqueCodeCategory::DSiWareGames => b'K',
             UniqueCodeCategory::DSiWareSystemUtilities => b'H',
         }
+    }
+}
+
+impl Display for UniqueCodeCategory {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        let value = u8::from(*self);
+        write!(f, "{}", value)
     }
 }

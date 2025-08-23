@@ -7,4 +7,5 @@ edition = "2024"
 binrw = { workspace = true }
 modular-bitfield = { workspace = true }
 png = { workspace = true }
+serde = { workspace = true }
 thiserror = { workspace = true }

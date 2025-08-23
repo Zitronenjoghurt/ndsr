@@ -3,15 +3,16 @@ use crate::codec::data::ROMData;
 use crate::codec::raw::RawNDSRom;
 use crate::codec::utils::{decode_string, trim_zeros_u8};
 use crate::error::{NDSRError, NDSRResult};
+use std::hash::{DefaultHasher, Hash, Hasher};
 
-mod cartridge_size;
-mod destination_language;
-mod header_misc;
-mod icon;
-mod nds_region;
-mod titles;
-mod unique_code_category;
-mod unit_code;
+pub mod cartridge_size;
+pub mod destination_language;
+pub mod header;
+pub mod icon;
+pub mod nds_region;
+pub mod titles;
+pub mod unique_code_category;
+pub mod unit_code;
 
 #[derive(Debug)]
 pub struct NDSRom {
@@ -25,7 +26,7 @@ pub struct NDSRom {
     pub cartridge_size: cartridge_size::CartridgeSize,
     pub rom_version: u8,
     pub rom_size: u32,
-    pub header_misc: header_misc::HeaderMisc,
+    pub header: header::RomHeader,
     pub icon: icon::RomIcon,
     pub data: ROMData,
 }
@@ -41,11 +42,30 @@ impl NDSRom {
 
     pub fn get_filesystem(&self) -> NDSRResult<Filesystem> {
         self.data.extract_filesystem(
-            self.header_misc.fat_offset,
-            self.header_misc.fat_size,
-            self.header_misc.fnt_offset,
-            self.header_misc.fnt_size,
+            self.header.fat_offset,
+            self.header.fat_size,
+            self.header.fnt_offset,
+            self.header.fnt_size,
         )
+    }
+
+    pub fn unique_identifier(&self) -> String {
+        let mut hasher = DefaultHasher::new();
+        self.header.hash(&mut hasher);
+        self.data.hash(&mut hasher);
+        let hash = hasher.finish();
+        format!(
+            "{}-{}-{}-{}-{}-v{}-{}B-{:?}-{hash:016x}",
+            self.short_title,
+            self.title_code,
+            self.maker_code,
+            self.destination_language,
+            self.unique_code_category,
+            self.rom_version,
+            self.rom_size,
+            self.cartridge_size,
+        )
+        .to_lowercase()
     }
 }
 
@@ -71,7 +91,7 @@ impl TryFrom<RawNDSRom> for NDSRom {
             cartridge_size: cartridge_size::CartridgeSize::from(raw.header.device_capacity),
             rom_version: raw.header.rom_version,
             rom_size: raw.header.total_used_rom_size,
-            header_misc: header_misc::HeaderMisc::try_from(&raw.header)?,
+            header: header::RomHeader::try_from(&raw.header)?,
             icon: icon::RomIcon::from(raw_icon_title),
             data: raw.data,
         };

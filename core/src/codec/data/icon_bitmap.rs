@@ -1,6 +1,7 @@
 use binrw::{BinRead, BinWrite};
+use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Default, Clone, BinRead, BinWrite)]
+#[derive(Debug, Default, Clone, BinRead, BinWrite, Serialize, Deserialize)]
 pub struct RawIconBitmap {
     /// 4x4 grid of 8x8 pixels
     pub tiles: [RawIconBitmapTile; 16],
@@ -27,7 +28,7 @@ impl RawIconBitmap {
     }
 }
 
-#[derive(Debug, Default, Clone, BinRead, BinWrite)]
+#[derive(Debug, Default, Clone, BinRead, BinWrite, Serialize, Deserialize)]
 pub struct RawIconBitmapTile {
     /// 8x8 Grid, 4 bit per pixel
     pub pixels: [u8; 32],

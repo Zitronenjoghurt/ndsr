@@ -2,8 +2,9 @@ use crate::codec::data::icon_bitmap::RawIconBitmap;
 use crate::codec::data::icon_palette::RawIconPalette;
 use crate::codec::data::icon_title::RawIconTitle;
 use png::{BitDepth, ColorType, Compression};
+use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Default, Clone)]
+#[derive(Debug, Default, Clone, Serialize, Deserialize)]
 pub struct RomIcon {
     pub palette: RawIconPalette,
     pub bitmap: RawIconBitmap,

@@ -1,21 +1,29 @@
+use crate::state::rom_store::RomStore;
 use crate::state::settings::SettingsState;
 use crate::systems::file_picker::FilePicker;
+use crate::systems::rom_library::RomLibrary;
 use crate::views::ViewID;
 use serde::{Deserialize, Serialize};
 
+pub mod rom_store;
 pub mod settings;
 
 #[derive(Default, Serialize, Deserialize)]
 pub struct AppState {
     current_view: ViewID,
     settings: SettingsState,
+    rom_store: RomStore,
     #[serde(skip, default)]
     pub file_picker: FilePicker,
+    #[serde(skip, default)]
+    pub rom_library: RomLibrary,
 }
 
 impl AppState {
     pub fn update(&mut self, ctx: &egui::Context) {
         self.settings.update(ctx);
+        self.rom_store.update();
+        self.rom_library.update(&mut self.rom_store);
         self.update_file_picker(ctx);
     }
 
@@ -33,6 +41,14 @@ impl AppState {
 
     pub fn settings_mut(&mut self) -> &mut SettingsState {
         &mut self.settings
+    }
+
+    pub fn rom_store(&self) -> &RomStore {
+        &self.rom_store
+    }
+
+    pub fn rom_store_mut(&mut self) -> &mut RomStore {
+        &mut self.rom_store
     }
 
     fn update_file_picker(&mut self, ctx: &egui::Context) {

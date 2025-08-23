@@ -77,7 +77,7 @@ impl ContentComponent for NavBar<'_> {
                 }
 
                 if let Some(settings_window) = settings_window {
-                    WindowButton::new(settings_window, " 🛠 ").ui(ui, state);
+                    WindowButton::new(settings_window, " 🛠 ").ui(ui);
                     ui.separator();
                 }
 

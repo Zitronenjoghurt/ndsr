@@ -2,8 +2,8 @@ use crate::codec::raw::header::RawHeader;
 use crate::codec::rom::nds_region::NDSRegion;
 use crate::error::{NDSRError, NDSRResult};
 
-#[derive(Debug)]
-pub struct HeaderMisc {
+#[derive(Debug, Hash)]
+pub struct RomHeader {
     pub encryption_seed_select: u8,
     pub _reserved1: [u8; 7],
     pub dsi_flags: u8,
@@ -44,7 +44,7 @@ pub struct HeaderMisc {
     pub _reserved3: [u8; 148],
 }
 
-impl TryFrom<&RawHeader> for HeaderMisc {
+impl TryFrom<&RawHeader> for RomHeader {
     type Error = NDSRError;
 
     fn try_from(header: &RawHeader) -> NDSRResult<Self> {

@@ -1,8 +1,9 @@
 use crate::colors::rgb555::RGB555;
 use crate::colors::rgb8::RGB8;
 use binrw::{BinRead, BinWrite};
+use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Default, Clone, BinRead, BinWrite)]
+#[derive(Debug, Default, Clone, BinRead, BinWrite, Serialize, Deserialize)]
 pub struct RawIconPalette {
     /// Color 0 is always ignored => it's transparent
     pub colors: [RGB555; 16],

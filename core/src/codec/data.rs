@@ -1,6 +1,7 @@
 use crate::codec::data::filesystem::Filesystem;
 use crate::codec::data::icon_title::{RawIconTitle, ICON_TITLE_SIZE};
 use crate::codec::raw::header::HEADER_SIZE;
+use crate::codec::utils::read_to_end;
 use crate::error::NDSRResult;
 use binrw::{BinRead, BinWrite};
 use filesystem::fat::FAT;
@@ -12,9 +13,11 @@ pub mod icon_bitmap;
 pub mod icon_palette;
 pub mod icon_title;
 
-#[derive(Debug, Clone, BinRead, BinWrite)]
+#[derive(Debug, Clone, Hash, BinRead, BinWrite)]
+#[br(little)]
+#[bw(little)]
 pub struct ROMData {
-    #[br(parse_with = binrw::helpers::until_eof)]
+    #[br(parse_with = read_to_end)]
     pub data: Vec<u8>,
 }
 

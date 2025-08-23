@@ -2,11 +2,13 @@ use crate::state::AppState;
 use egui::{Context, Ui};
 
 pub mod nav_bar;
+pub mod rom_ref_list;
+pub mod rom_ref_list_entry;
 pub mod window_button;
 pub mod window_renderer;
 
 pub trait Component: Sized {
-    fn ui(self, ui: &mut Ui, state: &mut AppState);
+    fn ui(self, ui: &mut Ui);
 }
 
 pub trait ContentComponent {

@@ -13,3 +13,13 @@ pub fn decode_string(bytes: &[u8]) -> String {
 pub fn encode_string(string: &str) -> Vec<u8> {
     string.as_bytes().to_vec()
 }
+
+pub fn read_to_end<R: binrw::io::Read + binrw::io::Seek>(
+    reader: &mut R,
+    _: binrw::Endian,
+    _: (),
+) -> binrw::BinResult<Vec<u8>> {
+    let mut buffer = Vec::new();
+    reader.read_to_end(&mut buffer)?;
+    Ok(buffer)
+}

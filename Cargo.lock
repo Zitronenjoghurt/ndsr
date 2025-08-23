@@ -1857,6 +1857,7 @@ dependencies = [
  "binrw",
  "modular-bitfield",
  "png",
+ "serde",
  "thiserror 2.0.16",
 ]
 

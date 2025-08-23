@@ -1,3 +1,5 @@
+use std::fmt::{Display, Formatter};
+
 #[allow(clippy::upper_case_acronyms)]
 #[derive(Debug, Copy, Clone)]
 pub enum DestinationLanguage {
@@ -81,5 +83,12 @@ impl From<DestinationLanguage> for u8 {
             DestinationLanguage::USA => b'L',
             DestinationLanguage::USAandAustralia => b'T',
         }
+    }
+}
+
+impl Display for DestinationLanguage {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        let value = u8::from(*self);
+        write!(f, "{}", value)
     }
 }

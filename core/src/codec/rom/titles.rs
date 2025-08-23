@@ -1,8 +1,9 @@
 use crate::codec::data::icon_title::RawIconTitle;
 use crate::codec::utils::trim_zeros_u16;
 use crate::error::{NDSRError, NDSRResult};
+use serde::{Deserialize, Serialize};
 
-#[derive(Debug)]
+#[derive(Debug, Default, Serialize, Deserialize)]
 pub struct Titles {
     pub japanese: TitleEntry,
     pub english: TitleEntry,
@@ -14,7 +15,7 @@ pub struct Titles {
     pub korean: Option<TitleEntry>,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Default, Serialize, Deserialize)]
 pub struct TitleEntry {
     pub title: String,
     pub sub_title: Option<String>,

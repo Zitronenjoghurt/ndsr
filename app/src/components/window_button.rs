@@ -1,5 +1,4 @@
 use crate::components::Component;
-use crate::state::AppState;
 use crate::windows::OpenableWindow;
 use egui::Ui;
 
@@ -15,7 +14,7 @@ impl<'a> WindowButton<'a> {
 }
 
 impl Component for WindowButton<'_> {
-    fn ui(self, ui: &mut Ui, _state: &mut AppState) {
+    fn ui(self, ui: &mut Ui) {
         let response = ui.selectable_label(self.window.window_is_open(), self.label);
         if response.clicked() {
             self.window.window_set_open(!self.window.window_is_open());

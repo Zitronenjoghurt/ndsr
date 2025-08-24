@@ -16,7 +16,7 @@ pub trait View: Default {
     fn render(&mut self, ctx: &Context, state: &mut AppState);
 }
 
-#[derive(Debug, Default, Serialize, Deserialize)]
+#[derive(Default, Serialize, Deserialize)]
 pub struct ViewManager {
     library_view: library::LibraryView,
     main_menu: main_menu::MainMenuView,

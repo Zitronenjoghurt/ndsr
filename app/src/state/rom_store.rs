@@ -111,9 +111,11 @@ impl RomStore {
 pub struct RomRef {
     path: PathBuf,
     identifier: String,
+    #[serde(skip, default)]
     titles: Titles,
+    #[serde(skip, default)]
     icon: RomIcon,
-    #[serde(skip)]
+    #[serde(skip, default)]
     icon_texture: RefCell<Option<egui::TextureHandle>>,
 }
 
@@ -130,14 +132,10 @@ impl RomRef {
             return false;
         };
 
-        let identifier = rom.unique_identifier();
-        if identifier == self.identifier {
-            return true;
-        }
-
-        self.identifier = identifier;
+        self.identifier = rom.unique_identifier();
         self.titles = rom.titles;
         self.icon = rom.icon;
+        self.icon_texture = RefCell::new(None);
 
         true
     }

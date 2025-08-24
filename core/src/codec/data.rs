@@ -28,6 +28,12 @@ impl ROMData {
         &self.data[data_address..data_address + size]
     }
 
+    pub fn extract_file(&self, file_offset: u32, file_size: u32) -> NDSRResult<Vec<u8>> {
+        Ok(self
+            .get_data_slice(file_offset as usize, file_size as usize)
+            .to_vec())
+    }
+
     pub fn extract_icon_title(&self, icon_title_offset: u32) -> NDSRResult<RawIconTitle> {
         Ok(RawIconTitle::read(&mut Cursor::new(self.get_data_slice(
             icon_title_offset as usize,

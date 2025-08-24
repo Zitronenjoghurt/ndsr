@@ -1,4 +1,5 @@
 use crate::components::nav_bar::NavBar;
+use crate::components::nds_rom_info::NDSRomInfo;
 use crate::components::rom_ref_list::RomRefList;
 use crate::components::window_renderer::WindowRenderer;
 use crate::components::{Component, ContentComponent};
@@ -6,7 +7,7 @@ use crate::state::AppState;
 use crate::systems::file_picker::FilePickerConfig;
 use crate::views::View;
 use crate::windows::settings::SettingsWindow;
-use egui::{Button, Context, ScrollArea, SidePanel, Ui};
+use egui::{Button, CentralPanel, Context, ScrollArea, SidePanel, Ui};
 use egui_ltreeview::{NodeBuilder, TreeView, TreeViewBuilder, TreeViewState};
 use ndsr_core::codec::data::filesystem::{Filesystem, FilesystemEntry};
 use serde::{Deserialize, Serialize};
@@ -19,6 +20,13 @@ pub struct LibraryView {
 }
 
 impl LibraryView {
+    fn render_central_panel(&mut self, ui: &mut Ui, state: &mut AppState) {
+        let Some(rom) = state.rom_store().loaded_rom() else {
+            return;
+        };
+        NDSRomInfo::new(rom).ui(ui);
+    }
+
     fn render_left_panel(&mut self, ui: &mut Ui, state: &mut AppState) {
         ui.horizontal(|ui| {
             let import_response = ui.add(Button::new(" 📥 "));
@@ -173,6 +181,10 @@ impl View for LibraryView {
 
         SidePanel::right("library_right_panel").show(ctx, |ui| {
             self.render_right_panel(ui, state);
+        });
+
+        CentralPanel::default().show(ctx, |ui| {
+            self.render_central_panel(ui, state);
         });
     }
 }

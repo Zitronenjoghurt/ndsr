@@ -2,6 +2,7 @@ use crate::state::AppState;
 use egui::{Context, Ui};
 
 pub mod nav_bar;
+pub mod nds_rom_info;
 pub mod rom_ref_list;
 pub mod rom_ref_list_entry;
 pub mod window_button;
